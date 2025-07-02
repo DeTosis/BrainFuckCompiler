@@ -2,7 +2,7 @@
   "profiles": {
     "BrainFuckCompiler": {
       "commandName": "Project",
-      "commandLineArgs": "-f main.bf"
+      "commandLineArgs": "-f ./main.bf -o ./build/compiled.exe -run"
     }
   }
 }
