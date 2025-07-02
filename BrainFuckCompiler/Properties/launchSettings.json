@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BrainFuckCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": "-f main.bf"
+    }
+  }
+}
