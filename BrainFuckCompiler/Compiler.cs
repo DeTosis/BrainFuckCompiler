@@ -21,38 +21,8 @@ internal class Compiler {
         Generator generator = new(tokens);
         var asm = generator.GenerateAssembly();
 
-        if (!Directory.Exists(@".\build")) {
-            Directory.CreateDirectory(@".\build");
-        }
-
-        foreach (var i in Directory.GetFiles(@".\build")) {
-            File.Delete(i);
-        }
-
-        File.WriteAllText(@".\build\output.asm", asm);
-
-        Process p = new Process();
-        p.StartInfo.FileName = "nasm";
-        p.StartInfo.Arguments = @"-f win64 .\build\output.asm";
-        p.StartInfo.UseShellExecute = false;
-        p.StartInfo.CreateNoWindow = false;
-        p.Start();
-        p.WaitForExit();
-        Console.WriteLine(BuildNotification(".obj generated", NotificationType.Suc));
-
-        p = new Process();
-        p.StartInfo.FileName = "gcc";
-        p.StartInfo.Arguments = @".\build\output.obj -o .\build\output.exe";
-        p.StartInfo.UseShellExecute = false;
-        p.StartInfo.CreateNoWindow = false;
-        p.Start();
-        p.WaitForExit();
-        if (p.ExitCode != 0) {
-            Console.WriteLine(BuildNotification($"Compilation finished ExitCode:[{p.ExitCode}]", NotificationType.Suc));
-            return;
-        } else {
-            Console.WriteLine(BuildNotification(".exe generated", NotificationType.Suc));
-        }
+        Assemble(asm);
+        Linq();
 
         Console.WriteLine(BuildNotification("Compilation finished", NotificationType.Suc));
     }
@@ -76,5 +46,47 @@ internal class Compiler {
 
         exc = BuildNotification($"Data reached successfully", NotificationType.Suc);
         return true;
+    }
+
+    public static void Assemble(string asm) {
+        if (!Directory.Exists(@".\build")) {
+            Directory.CreateDirectory(@".\build");
+        }
+
+        foreach (var i in Directory.GetFiles(@".\build")) {
+            File.Delete(i);
+        }
+
+        File.WriteAllText(@".\build\output.asm", asm);
+
+        Process p = new Process();
+        p.StartInfo.FileName = "nasm";
+        p.StartInfo.Arguments = @"-f win64 .\build\output.asm";
+        p.StartInfo.UseShellExecute = false;
+        p.StartInfo.CreateNoWindow = false;
+        p.Start();
+        p.WaitForExit();
+        if (p.ExitCode != 0) {
+            Console.WriteLine(BuildNotification($"Compilation finished ExitCode:[{p.ExitCode}]", NotificationType.Suc));
+            return;
+        } else {
+            Console.WriteLine(BuildNotification(".obj generated", NotificationType.Suc));
+        }
+    }
+
+    public static void Linq() {
+        Process p = new Process();
+        p.StartInfo.FileName = "gcc";
+        p.StartInfo.Arguments = @".\build\output.obj -o .\build\output.exe";
+        p.StartInfo.UseShellExecute = false;
+        p.StartInfo.CreateNoWindow = false;
+        p.Start();
+        p.WaitForExit();
+        if (p.ExitCode != 0) {
+            Console.WriteLine(BuildNotification($"Compilation finished ExitCode:[{p.ExitCode}]", NotificationType.Suc));
+            return;
+        } else {
+            Console.WriteLine(BuildNotification(".exe generated", NotificationType.Suc));
+        }
     }
 }
